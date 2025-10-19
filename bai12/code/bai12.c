@@ -6,8 +6,8 @@
 
 
 typedef struct {
-    uint32_t freq;   // T?n s? (Hz)
-    uint32_t duty;   // Ð? r?ng xung (%)
+    uint32_t freq;   // Tan so  (Hz)
+    uint32_t duty;   // do rong (%)
 } BlinkParam_t;
 
 
@@ -30,9 +30,9 @@ int main(void)
 
     if (xBlinkQueue != NULL)
     {
-        // Tao task chap LED (uu tiên cao hon)
+        // Tao task chap LED (uu tiÃªn cao hon)
         xTaskCreate(TaskBlink, "Blink", 256, NULL, 2, NULL);
-        // Tao task phát du lieu (uu tiên thap hon)
+        // Tao task phÃ¡t du lieu (uu tiÃªn thap hon)
         xTaskCreate(TaskGen, "Gen", 256, NULL, 1, NULL);
 
         // Bat dau chay FreeRTOS
@@ -42,7 +42,6 @@ int main(void)
     while (1);
 }
 
-// Cau hình chân LED (PC13)
 
 void GPIO_Config(void)
 {
@@ -54,11 +53,10 @@ void GPIO_Config(void)
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
     GPIO_Init(LED_PORT, &GPIO_InitStructure);
 
-    GPIO_SetBits(LED_PORT, LED_PIN); // LED tat (ngu?c logic)
 }
 
 //-----------------------------------------------
-// Task 1: Nh?n d? li?u và Blink LED
+// Task 1: Nh?n d? li?u vÃ  Blink LED
 //-----------------------------------------------
 void TaskBlink(void *pvParameters)
 {
@@ -70,7 +68,7 @@ void TaskBlink(void *pvParameters)
         
         if (xQueueReceive(xBlinkQueue, &param, pdMS_TO_TICKS(10)) == pdPASS)
         {
-            // Tránh chia 0
+            // TrÃ¡nh chia 0
             if (param.freq == 0) param.freq = 1;
             if (param.duty > 100) param.duty = 100;
 
@@ -81,11 +79,11 @@ void TaskBlink(void *pvParameters)
         }
 
         // BAT LED
-        GPIO_ResetBits(LED_PORT, LED_PIN);
+        GPIO_SetBits(LED_PORT, LED_PIN);
         vTaskDelay(pdMS_TO_TICKS(onTime));
 
         // TAT LED
-        GPIO_SetBits(LED_PORT, LED_PIN);
+        GPIO_ResetBits(LED_PORT, LED_PIN);
         vTaskDelay(pdMS_TO_TICKS(offTime));
     }
 }
@@ -97,11 +95,11 @@ void TaskGen(void *pvParameters)
     for (;;)
     {
       
-        param.freq = (rand() % 5) + 1;       // 1–5 Hz
-        param.duty = (rand() % 80) + 10;     // 10–90%
+        param.freq = (rand() % 5) + 1;       // 1â€“5 Hz
+        param.duty = (rand() % 80) + 10;     // 10â€“90%
 
         xQueueSend(xBlinkQueue, &param, pdMS_TO_TICKS(10));
 
-        vTaskDelay(pdMS_TO_TICKS(2000)); // dung lai 2 s roi gui tiep dê thay doi kieu chop
+        vTaskDelay(pdMS_TO_TICKS(2000)); // dung lai 2 s roi gui tiep dÃª thay doi kieu chop
     }
 }
