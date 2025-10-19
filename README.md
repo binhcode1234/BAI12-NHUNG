@@ -10,16 +10,13 @@ Mục tiêu: điều khiển LED nhấp nháy với **tần số** và **độ r
 ---
 
 ## ⚙️ CẤU TRÚC HỆ THỐNG  
-┌─────────────────────────────┐
-│ FreeRTOS OS │
-├──────────────┬──────────────┤
-│ TaskGen │ TaskBlink │
-│ (Low Prio) │ (High Prio) │
-├──────────────┴──────────────┤
-│ Queue xBlinkQueue │
-│ → Truyền BlinkParam_t │
-│ → { freq (Hz), duty (%) } │
-└─────────────────────────────┘
+Hệ thống được xây dựng trên **FreeRTOS**, gồm **hai task** hoạt động song song và **một hàng đợi (Queue)** để truyền dữ liệu giữa chúng.
+
+### 🧱 Thành phần chính:
+- **TaskGen**: Sinh ngẫu nhiên giá trị tần số (freq) và độ rộng xung (duty), sau đó gửi vào hàng đợi.
+- **TaskBlink**: Nhận dữ liệu từ hàng đợi, tính toán chu kỳ bật/tắt và điều khiển LED chớp tương ứng.
+- **xBlinkQueue**: Hàng đợi trung gian lưu trữ cấu trúc dữ liệu `BlinkParam_t` giữa hai task.
+
 ---
 
 ## 🧩 CHỨC NĂNG CỤ THỂ  
